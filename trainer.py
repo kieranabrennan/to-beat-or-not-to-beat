@@ -37,6 +37,7 @@ cropped_records = crop_and_pad_record_list(dup_records, resample_fs, crop_length
 BATCH_SIZE = 64
 EPOCHS = 400
 K_FOLDS = 10
+STREAM2_SIZE = 9
 
 X = np.array(cropped_records)
 y = np.array(dup_labels)
@@ -62,20 +63,20 @@ for train_index, test_index in kf.split(X):
     validation_dataset = tf.data.Dataset.from_tensor_slices((X_valid, y_valid))
     test_dataset = tf.data.Dataset.from_tensor_slices((X_test, y_test))
 
-    train_dataset = train_dataset.shuffle(buffer_size=100).batch(BATCH_SIZE).prefetch(buffer_size=BATCH_SIZE*3)
-    validation_dataset = validation_dataset.batch(BATCH_SIZE).prefetch(buffer_size=BATCH_SIZE*3)
-    test_dataset = test_dataset.batch(BATCH_SIZE).prefetch(buffer_size=BATCH_SIZE*3)
+    train_dataset = train_dataset.shuffle(buffer_size=100).batch(BATCH_SIZE)
+    validation_dataset = validation_dataset.batch(BATCH_SIZE)
+    test_dataset = test_dataset.batch(BATCH_SIZE)
 
     logs_dir = 'logs/' + train_time + f'/{fold_id}'
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
-    model = create_dual_stream_cnn_model((X_train.shape[1], 1))
+    model = create_dual_stream_cnn_model((X_train.shape[1], 1), stream2_size = STREAM2_SIZE)
     print_gpu_availability()
 
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logs_dir, histogram_freq=0)
     lr_scheduler = tf.keras.callbacks.LearningRateScheduler(exponential_decay_fn)
-    early_stopping_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, verbose=1)
+    early_stopping_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.001, patience=20, mode='min', restore_best_weights=True, verbose=1)
     model.fit(train_dataset, validation_data = validation_dataset,
             epochs=EPOCHS, verbose=1,
             callbacks=[lr_scheduler, tensorboard_callback, early_stopping_callback])

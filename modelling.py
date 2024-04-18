@@ -41,7 +41,11 @@ def create_single_stream_cnn_model(input_shape):
     print(model.summary())
     return model
 
-def create_dual_stream_cnn_model(input_shape):
+def create_dual_stream_cnn_model(input_shape, stream2_size = 3, verbose = 1):
+    '''
+    Creates a CNN model following the paper 
+    '''
+    
     # Define the inputs for each stream
     input = Input(shape=input_shape)
     
@@ -67,12 +71,12 @@ def create_dual_stream_cnn_model(input_shape):
     x = MaxPooling1D(2, strides=2)(x)
     
     # Stream 2
-    y = Conv1D(64, 7, activation='relu', padding='same')(input)
-    y = Conv1D(64, 7, activation='relu', padding='same')(y)
+    y = Conv1D(64, stream2_size, activation='relu', padding='same')(input)
+    y = Conv1D(64, stream2_size, activation='relu', padding='same')(y)
     y = MaxPooling1D(3, strides=3)(y)
     
-    y = Conv1D(128, 7, activation='relu', padding='same')(y)
-    y = Conv1D(128, 7, activation='relu', padding='same')(y)
+    y = Conv1D(128, stream2_size, activation='relu', padding='same')(y)
+    y = Conv1D(128, stream2_size, activation='relu', padding='same')(y)
     y = MaxPooling1D(3, strides=3)(y)
 
     y = Conv1D(256, 3, activation='relu', padding='same')(y)
@@ -99,5 +103,6 @@ def create_dual_stream_cnn_model(input_shape):
     optimizer = SGD()
     metrics = ['accuracy', 'Precision', 'Recall']
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=metrics)
-    print(model.summary())
+    if verbose > 0:
+        print(model.summary())
     return model
