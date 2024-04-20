@@ -39,6 +39,8 @@ To get GPU working had to run
 pip install tensorflow[and-cuda]==2.15.0.post1
 Running just pip install installed 2.16 which could not recognize the GPU
 
+For the samplerate package, had to use
+pip -q install git+https://github.com/tuxu/python-samplerate.git@fix_cmake_dep
 
 ## Benchmark
 10-fold test results for ecg signals of 30 s duration (original paper results in parentheses)
@@ -48,9 +50,9 @@ Model in this repository uses a binary classification signal sigmoidal activatio
 | Model   | Sensitivity | Precision   |  Accuracy   |
 | :------ | :---------: | :---------: | :---------: |
 | (3,3)   |98.4% (85.9%)|96.6% (92.0%)|98.1% (97.3%)|
-| (3,5)   |98.3% (89.2%)|97.1% (84.1%)|98.3% (96.5%)|
+| (3,5)   |98.3% (89.2%)|**97.1%** (84.1%)|98.3% (96.5%)|
 | (3,7)   |98.7% (89.9%)|96.8% (91.4%)|98.3% (97.8%)|
-| (3,9)   |XX.X% (88.6%)|XX.X% (91.1%)|XX.X% (97.4%)|
+| (3,9)   |**98.7%** (88.6%)|96.9% (91.1%)|**98.4%** (97.4%)|
 
 ## Disclaimer
 This tool is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Users are advised to seek the advice of qualified health providers with any questions regarding a medical condition.

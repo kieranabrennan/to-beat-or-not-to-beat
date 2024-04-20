@@ -53,6 +53,10 @@ models_dir = 'models/' + train_time
 if not os.path.exists(models_dir):
     os.makedirs(models_dir)
 
+with open(models_dir + "/training_params.json", "w") as f:
+    training_params = {"BATCH_SIZE": 64, "EPOCH": EPOCHS, "K_FOLDS": K_FOLDS, "STREAM2_SIZE": STREAM2_SIZE}
+    json.dump(training_params, f, indent=4)
+
 for train_index, test_index in kf.split(X):
 
     X_train, X_test = X[train_index], X[test_index]

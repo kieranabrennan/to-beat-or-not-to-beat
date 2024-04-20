@@ -1,4 +1,5 @@
 venv/
-models/
+models/*
+!models/baseline/
 logs/
 data/polarh10
