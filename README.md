@@ -4,6 +4,11 @@ Atrial Fibrillation (AF) is the most common serious heart arrthymia, affecting a
 
 This is an implementation of the paper Multiscaled fusion of deep convolutional neural networks for screening atrial fibrillation from single lead short ECG recordings. IEEE journal of biomedical and health informatics, 22(6), 1744-1753, Fan, X., Yao, Q., Cai, Y., Miao, F., Sun, F., & Li, Y. (2018). A convolutional neural network is trained as a binary classifier to detect cases of atrial fibrillation using the Physionet Computing in Cardiology Challenge 2017 (https://physionet.org/content/challenge-2017/1.0.0/).
 
+<p align="center">
+  <img src="./img/sample_af.png" width="48%" />
+  <img src="./img/sample_n.png" width="48%" />
+</p>
+
 ## Setup & Usage
 
 ### Inference
