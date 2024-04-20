@@ -3,6 +3,35 @@ import asyncio
 import time
 import numpy as np
 import math
+from bleak import BleakScanner
+from tqdm import tqdm
+
+async def record_polar_ecg(record_len):
+    devices = await BleakScanner.discover()
+    polar_device_found = False
+    ecg_data = None
+
+    for device in devices:
+        if device.name is not None and "Polar" in device.name:
+            polar_device_found = True
+            polar_device = PolarH10(device)
+            await polar_device.connect()
+            await polar_device.get_device_info()
+            await polar_device.print_device_info()
+
+            await polar_device.start_ecg_stream()
+            for i in tqdm(range(record_len), desc='Recording...'):
+                await asyncio.sleep(1)
+            await polar_device.stop_ecg_stream()
+
+            ecg_data = polar_device.get_ecg_data()
+            
+            await polar_device.disconnect()
+    
+    if not polar_device_found:
+        print("No Polar device found")
+
+    return ecg_data
 
 class PolarH10:
     ## HEART RATE SERVICE

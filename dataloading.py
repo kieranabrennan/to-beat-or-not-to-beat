@@ -3,6 +3,8 @@ import pandas as pd
 from tqdm import tqdm
 import wfdb
 import pickle
+import pyedflib
+import numpy as np
 
 def read_challenge17_data(db_dir):
     """
@@ -43,3 +45,28 @@ def save_challenge17_pkl(save_path, data):
 def load_challenge17_pkl(save_path):
     with open(save_path, 'rb') as f:
         return pickle.load(f)
+
+def read_ecg_from_edf(file_path):
+    '''
+    Reads an ecg signal from an edf file given the file path
+    EDF is European Data Format, a standard format for medical time series, and exportable from the Polar H10 ECG Analysis App
+    Returns a tuple of t and signal both as numpy arrays. t is derived from the sample rate
+    '''
+
+    with pyedflib.EdfReader(file_path) as edf:
+        # Get the number of signals in the file
+        n = edf.signals_in_file
+        
+        #  Assuming one signal
+        ecg = edf.readSignal(0)
+        fs = edf.getSampleFrequency(0)
+        print(f"EDF file sample rate: {fs}")
+
+        dt = 1/fs
+        t = np.arange(0,dt*(len(ecg)), dt)
+        signal_ids = t > 5 # Remove first 5 seconds
+        ecg = ecg[signal_ids]
+        t = t[signal_ids]
+        t = t - t[0]
+
+    return (t, ecg)
