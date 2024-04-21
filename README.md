@@ -11,12 +11,12 @@ This is an implementation of the paper Multiscaled fusion of deep convolutional 
 ## Setup & Usage
 
 ### Inference
-There are three options for inference using a pre-trained model in Inference.ipynb: record ECG from a Polar H10 HR monitor, load pre-recorded ECG data, sample the Physionet dataset.
+There are three options for inference using a pre-trained model in Inference.ipynb: 1) record ECG from a Polar H10 HR monitor, 2) load pre-recorded ECG data, 3) load a sample from the Physionet dataset.
 
 #### 1. Polar H10 Inference
 - Put on the Polar H10 chest strap
-- Run the first cell in Inference.ipynb, which connects to the Polar H10 via Bluetooth and takes a 60 second ECG recording, and preprocesses the data
-- Run the last cell, which loads the model and runs inference to display the results
+- Run the first cell in Inference.ipynb, which connects to the Polar H10 via Bluetooth and takes a 60 second ECG recording
+- Run the last cell, which loads the model, runs inference, and displays the results
 
 #### 2. Pre-recorded ECG Inference
 - Uploaded a pre-recorded ECG .edf file into the data directory. This can be recorded for example with the "Polar H10 ECG Analysis App" on the Google Play Store
@@ -34,29 +34,24 @@ To train the network
     pip install -r requirements.txt 
     python3 training.py
 ```
-The 
+The default model is a two-stream CNN, where each stream has 13 conv layers and 5 max pooling. The two streams are concatenated followed by 3 fully connected layers. In the first stream the kernel size in all layers is 3, in the second stream the kernel sizes of the first 4 layers is set by the parameter `STREAM2_SIZE`, as either 3, 5, 7, or 9. See the [original paper for details](https://ieeexplore.ieee.org/iel7/6221020/8494901/08428414.pdf)
 
-
+Pre-processing is as per the original implementation, which involves low-pass filtering, downsampling, normalisation, and cropping/padding samples to a fixed duration (30s default). In the training dataset, atrial fibrillation cases are replicated to balance the dataset.
 
 **Notes:**
-To get GPU working had to run
-pip install tensorflow[and-cuda]==2.15.0.post1
-Running just pip install installed 2.16 which could not recognize the GPU
 
-For the samplerate package, had to use
-pip -q install git+https://github.com/tuxu/python-samplerate.git@fix_cmake_dep
+- Tensorflow 2.15 is specified, Tensorflow 2.16 did not recognise GPU for training
+- Samplerate package was installed from `pip -q install git+https://github.com/tuxu/python-samplerate.git@fix_cmake_dep` to avoid cmake errors.
 
 ## Benchmark
-10-fold test results for ecg signals of 30 s duration (original paper results in parentheses)
+10-fold test results for ecg signals of 30 s duration. The equivalent results from the original paper are given in parentheses. Results given are the mean of the 10-fold cross validation. Model weights (from one of the validation folds) are given in models/baseline directory.
 
-Model in this repository uses a binary classification signal sigmoidal activation and binary cross entropy loss
-
-| Model   | Sensitivity | Precision   |  Accuracy   |
+| Model   |  Accuracy   | Sensitivity | Precision   |
 | :------ | :---------: | :---------: | :---------: |
-| (3,3)   |78.9% (85.9%)|86.9% (92.0%)|95.8% (97.3%)|
-| (3,5)   |**81.5%** (89.2%)|86.5% (84.1%)|**96.0%** (96.5%)|
-| (3,7)   |80.4% (89.9%)|**86.9%** (91.4%)|95.9% (97.8%)|
-| (3,9)   |79.9% (88.6%)|85.6% (91.1%)|95.7% (97.4%)|
+| (3,3)   |95.8% (97.3%)|78.9% (85.9%)|86.9% (92.0%)|
+| (3,5)   |**96.0%** (96.5%)|**81.5%** (89.2%)|86.5% (84.1%)|
+| (3,7)   |95.9% (97.8%)|80.4% (89.9%)|**86.9%** (91.4%)|
+| (3,9)   |95.7% (97.4%)|79.9% (88.6%)|85.6% (91.1%)|
 
 ## Disclaimer
 This tool is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Users are advised to seek the advice of qualified health providers with any questions regarding a medical condition.
