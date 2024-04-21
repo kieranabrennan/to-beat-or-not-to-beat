@@ -43,7 +43,7 @@ Pre-processing is as per the original implementation, which involves low-pass fi
 - Tensorflow 2.15 is specified, Tensorflow 2.16 did not recognise GPU for training
 - Samplerate package was installed from `pip -q install git+https://github.com/tuxu/python-samplerate.git@fix_cmake_dep` to avoid cmake errors.
 
-## Benchmark
+## Results
 10-fold test results for ecg signals of 30 s duration. The equivalent results from the original paper are given in parentheses. Results given are the mean of the 10-fold cross validation. Model weights (from one of the validation folds) are given in models/baseline directory.
 
 | Model   |  Accuracy   | Sensitivity | Precision   |
