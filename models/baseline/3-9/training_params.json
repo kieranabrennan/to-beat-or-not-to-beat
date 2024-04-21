@@ -1,0 +1,6 @@
+{
+    "BATCH_SIZE": 64,
+    "EPOCH": 400,
+    "K_FOLDS": 10,
+    "STREAM2_SIZE": 9
+}

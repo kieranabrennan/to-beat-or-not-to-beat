@@ -1,6 +1,6 @@
 data/physionet/* filter=lfs diff=lfs merge=lfs -text
 data/physionetnormalisedrecords_fslist_labels.pkl filter=lfs diff=lfs merge=lfs -text
-models/baseline/3_3/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
-models/baseline/3_5/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
-models/baseline/3_7/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
-models/baseline/3_9/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
+models/baseline/3-3/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
+models/baseline/3-5/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
+models/baseline/3-7/model_weights.h5 filter=lfs diff=lfs merge=lfs -text
+models/baseline/3-9/model_weights.h5 filter=lfs diff=lfs merge=lfs -text

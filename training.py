@@ -11,12 +11,14 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import json
 
+tf.keras.backend.clear_session()
+
 db_dir = "data/physionet"
 pkl_path = db_dir + "normalisedrecords_fslist_labels.pkl"
 cutoff = 60 # Hz
 resample_fs = 120 # Hz
 crop_length = 30 # s
-afib_dup_factor = 3
+afib_dup_factor = 2
 
 if not os.path.exists(pkl_path):
     # Read filter, and normalise
@@ -30,19 +32,11 @@ else:
     normalised_records, fs_list, labels = load_challenge17_pkl(pkl_path)
 
 normalised_records, labels = drop_other_class_records_and_labels(normalised_records, labels)
-dup_records, dup_labels = duplicate_afib_records_in_list(normalised_records, labels, afib_dup_factor)
-cropped_records = crop_and_pad_record_list(dup_records, resample_fs, crop_length)
-
 
 BATCH_SIZE = 64
 EPOCHS = 400
 K_FOLDS = 10
 STREAM2_SIZE = 9
-
-X = np.array(cropped_records)
-y = np.array(dup_labels)
-y = y[:,0].astype(int)
-X = np.expand_dims(X, -1)
 
 kf = KFold(n_splits=K_FOLDS, shuffle=True)
 
@@ -57,12 +51,24 @@ with open(models_dir + "/training_params.json", "w") as f:
     training_params = {"BATCH_SIZE": 64, "EPOCH": EPOCHS, "K_FOLDS": K_FOLDS, "STREAM2_SIZE": STREAM2_SIZE}
     json.dump(training_params, f, indent=4)
 
-for train_index, test_index in kf.split(X):
+for train_index, test_index in kf.split(normalised_records):
 
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
+    train_samples = [normalised_records[index] for index in train_index]
+    test_samples = [normalised_records[index] for index in test_index]
+    train_labels = labels.iloc[train_index].reset_index(drop=True)
+    test_labels = labels.iloc[test_index].reset_index(drop=True)
+
+    train_samples, train_labels = duplicate_afib_records_in_list(train_samples, train_labels, afib_dup_factor)
+
+    train_samples = crop_and_pad_record_list(train_samples, resample_fs, crop_length)
+    test_samples = crop_and_pad_record_list(test_samples, resample_fs, crop_length)
+
+    X_train, X_test = np.array(train_samples), np.array(test_samples)
+    X_train, X_test = np.expand_dims(X_train, -1), np.expand_dims(X_test, -1)
+    y_train, y_test = train_labels['A'].to_numpy().astype(int), test_labels['A'].to_numpy().astype(int)
 
     X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.1)
+
     train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train))
     validation_dataset = tf.data.Dataset.from_tensor_slices((X_valid, y_valid))
     test_dataset = tf.data.Dataset.from_tensor_slices((X_test, y_test))

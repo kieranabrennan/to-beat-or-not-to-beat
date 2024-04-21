@@ -4,22 +4,18 @@ Atrial Fibrillation (AF) is the most common serious heart arrthymia, affecting a
 
 This is an implementation of the paper Multiscaled fusion of deep convolutional neural networks for screening atrial fibrillation from single lead short ECG recordings. IEEE journal of biomedical and health informatics, 22(6), 1744-1753, Fan, X., Yao, Q., Cai, Y., Miao, F., Sun, F., & Li, Y. (2018). A convolutional neural network is trained as a binary classifier to detect cases of atrial fibrillation using the Physionet Computing in Cardiology Challenge 2017 (https://physionet.org/content/challenge-2017/1.0.0/).
 
-<p align="center">
-  <img src="./img/sample_af.png" width="48%" />
-  <img src="./img/sample_n.png" width="48%" />
-</p>
+![](img/sample_af.png)
+![](img/sample_n.png)
+
 
 ## Setup & Usage
 
 ### Inference
-There are three options for inference using a pre-trained model in Inference.ipynb:
-1. Run a Atrial Fibrillation prediction immediately by connecting to a Polar H10 HR monitor.
-2. Run a prediction on pre-recorded ECG data loaded from an .edf file.
-3. Run a prediction on a sample from the Physionet dataset, select a random sample to run inference
+There are three options for inference using a pre-trained model in Inference.ipynb: record ECG from a Polar H10 HR monitor, load pre-recorded ECG data, sample the Physionet dataset.
 
 #### 1. Polar H10 Inference
-- Connect the Polar H10 chest strap
-- Run the first cell in Inference.ipynb, which will connect to the Polar H10 via Bluetooth and take a 60 second ECG recording, and preprocesses the data
+- Put on the Polar H10 chest strap
+- Run the first cell in Inference.ipynb, which connects to the Polar H10 via Bluetooth and takes a 60 second ECG recording, and preprocesses the data
 - Run the last cell, which loads the model and runs inference to display the results
 
 #### 2. Pre-recorded ECG Inference
@@ -36,10 +32,13 @@ To train the network
 
 ``` 
     pip install -r requirements.txt 
-    python3 trainer.py
+    python3 training.py
 ```
+The 
 
-Notes:
+
+
+**Notes:**
 To get GPU working had to run
 pip install tensorflow[and-cuda]==2.15.0.post1
 Running just pip install installed 2.16 which could not recognize the GPU
@@ -54,10 +53,10 @@ Model in this repository uses a binary classification signal sigmoidal activatio
 
 | Model   | Sensitivity | Precision   |  Accuracy   |
 | :------ | :---------: | :---------: | :---------: |
-| (3,3)   |98.4% (85.9%)|96.6% (92.0%)|98.1% (97.3%)|
-| (3,5)   |98.3% (89.2%)|**97.1%** (84.1%)|98.3% (96.5%)|
-| (3,7)   |98.7% (89.9%)|96.8% (91.4%)|98.3% (97.8%)|
-| (3,9)   |**98.7%** (88.6%)|96.9% (91.1%)|**98.4%** (97.4%)|
+| (3,3)   |78.9% (85.9%)|86.9% (92.0%)|95.8% (97.3%)|
+| (3,5)   |**81.5%** (89.2%)|86.5% (84.1%)|**96.0%** (96.5%)|
+| (3,7)   |80.4% (89.9%)|**86.9%** (91.4%)|95.9% (97.8%)|
+| (3,9)   |79.9% (88.6%)|85.6% (91.1%)|95.7% (97.4%)|
 
 ## Disclaimer
 This tool is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Users are advised to seek the advice of qualified health providers with any questions regarding a medical condition.
